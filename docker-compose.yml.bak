@@ -1,5 +1,6 @@
 name: media-stack
 services:
+
   qbittorrent:
     profiles: ["no-vpn"]
     container_name: qbittorrent
@@ -18,8 +19,9 @@ services:
       - 6881:6881/udp
     volumes:
       - qbittorrent-config:/config
-      - /mnt/media:/data
+      - /mnt/media/downloads:/downloads
     restart: unless-stopped
+
   radarr:
     profiles: ["no-vpn"]
     container_name: radarr
@@ -34,12 +36,14 @@ services:
       - 7878:7878
     volumes:
       - radarr-config:/config
-      - /mnt/media:/data
+      - /mnt/media/downloads:/downloads
+      - /mnt/media/media:/media
     restart: unless-stopped
+
   sonarr:
     profiles: ["no-vpn"]
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:latest
+    image: linuxserver/sonarr:4.0.16
     networks:
       - mynetwork
     environment:
@@ -50,8 +54,10 @@ services:
       - 8989:8989
     volumes:
       - sonarr-config:/config
-      - /mnt/media:/data
+      - /mnt/media/downloads:/downloads
+      - /mnt/media/media:/media
     restart: unless-stopped
+
   prowlarr:
     profiles: ["no-vpn"]
     container_name: prowlarr
@@ -67,6 +73,7 @@ services:
     volumes:
       - prowlarr-config:/config
     restart: unless-stopped
+
   jellyfin:
     profiles: ["no-vpn"]
     container_name: jellyfin
@@ -90,6 +97,7 @@ services:
       - "993" #render
       - "44" #video
     restart: unless-stopped
+
   bazarr:
     profiles: ["no-vpn"]
     container_name: bazarr
@@ -102,10 +110,12 @@ services:
       - TZ=UTC
     volumes:
       - bazarr-config:/config
+      - /mnt/media/downloads:/downloads
       - /mnt/media:/data
     ports:
       - 6767:6767
     restart: unless-stopped
+
   seerr:
     profiles: ["no-vpn"]
     container_name: seerr
@@ -122,6 +132,7 @@ services:
     ports:
       - 5055:5055
     restart: unless-stopped
+
 volumes:
   qbittorrent-config:
   radarr-config:
@@ -130,6 +141,7 @@ volumes:
   jellyfin-config:
   seerr-config:
   bazarr-config:
+
 networks:
   mynetwork:
     external: true
