@@ -4,7 +4,7 @@ services:
     profiles: ["no-vpn"]
     container_name: qbittorrent
     privileged: true
-    image: lscr.io/linuxserver/qbittorrent:5.1.4
+    image: lscr.io/linuxserver/qbittorrent:latest
     networks:
       - mynetwork
     environment:
@@ -55,7 +55,7 @@ services:
   prowlarr:
     profiles: ["no-vpn"]
     container_name: prowlarr
-    image: linuxserver/prowlarr:2.3.0
+    image: linuxserver/prowlarr:latest
     networks:
       - mynetwork
     environment:
@@ -70,7 +70,7 @@ services:
   jellyfin:
     profiles: ["no-vpn"]
     container_name: jellyfin
-    image: linuxserver/jellyfin:10.11.6
+    image: linuxserver/jellyfin:latest
     networks:
       - mynetwork
     environment:
@@ -93,7 +93,7 @@ services:
   bazarr:
     profiles: ["no-vpn"]
     container_name: bazarr
-    image: lscr.io/linuxserver/bazarr:1.5.1
+    image: lscr.io/linuxserver/bazarr:latest
     networks:
       - mynetwork
     environment:
@@ -122,6 +122,39 @@ services:
     ports:
       - 5055:5055
     restart: unless-stopped
+  tdarr:
+      profiles: ["no-vpn"]
+      container_name: tdarr
+      image: ghcr.io/haveagitgat/tdarr:latest
+      networks:
+        - mynetwork
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=UTC
+        - UMASK_SET=002
+        - serverIP=0.0.0.0
+        - serverPort=8266
+        - webUIPort=8265
+        - internalNode=true
+        - internalNodeName=kryplab-node
+        - ffmpegVersion=6
+      ports:
+        - 8265:8265   # Web UI
+        - 8266:8266   # Server
+      volumes:
+        - tdarr-config:/app/configs
+        - tdarr-server:/app/server
+        - tdarr-logs:/app/logs
+        - /mnt/media:/data
+        - /tmp/tdarr-transcode:/temp
+      devices:
+        - /dev/dri/renderD128:/dev/dri/renderD128
+      group_add:
+        - "993"  # render
+        - "44"   # video
+      restart: unless-stopped
+
 volumes:
   qbittorrent-config:
   radarr-config:
@@ -130,6 +163,9 @@ volumes:
   jellyfin-config:
   seerr-config:
   bazarr-config:
+  tdarr-config:
+  tdarr-server:
+  tdarr-logs:
 networks:
   mynetwork:
     external: true
