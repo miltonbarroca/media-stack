@@ -53,6 +53,9 @@ services:
       - /mnt/media:/data
     restart: unless-stopped
   prowlarr:
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
     profiles: ["no-vpn"]
     container_name: prowlarr
     image: linuxserver/prowlarr:latest
